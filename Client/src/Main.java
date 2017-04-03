@@ -48,11 +48,23 @@ public class Main extends Application {
 
         grid.add(menuBar,0,0,8,1);
 
-        songList = new ListView<>();
+        songList = new ListView<Song>();
         songList.setMinWidth(300);
         songList.setMaxWidth(300);
         songList.setItems(DataSource.getAllSongs());
         grid.add(songList, 0, 1, 6,1);
+
+        songList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Song>() {
+            public void changed(ObservableValue<? extends Song> observable, Song oldValue, Song newValue) {
+                if(isPlaying){
+                    mediaPlayer.stop();
+                    isPlaying = false;
+                    isAtEnd = false;
+                    play.setText(">");
+                }
+                mediaPlayer = new MediaPlayer(newValue.getData());
+            }
+        });
 
         prev = new Button("<<");
         prev.setMinWidth(50);

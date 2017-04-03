@@ -72,6 +72,10 @@ public class Song {
         return album;
     }
 
+    public Media getData(){
+        return data;
+    }
+
     public String toString(){
         if((songName != null) && (artist != null)) {
             return (songName + " - " + artist);
