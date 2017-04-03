@@ -130,6 +130,14 @@ public class Main extends Application {
     public void updateValues() {
         time = mediaPlayer.getCurrentTime();
         timeSlider.setValue(time.toSeconds());
+        timeDisplay.setText(getFormattedTime(mediaPlayer.getCurrentTime()) + " / " + getFormattedTime(mediaPlayer.getTotalDuration()));
+    }
+
+    public String getFormattedTime(Duration d){
+        int minutes = (int)d.toSeconds()/60;
+        int seconds = (int)d.toSeconds()%60;
+
+        return (minutes + ":" + seconds);
     }
 
     public static void main(String[] args){
