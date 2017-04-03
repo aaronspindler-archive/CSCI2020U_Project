@@ -10,7 +10,6 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.io.File;
 
 
@@ -58,6 +57,7 @@ public class Main extends Application {
         prev = new Button("<<");
         prev.setMinWidth(50);
         prev.setMaxWidth(50);
+        prev.setOnAction(e -> prev());
         grid.add(prev, 0, 2, 1,1);
 
         play = new Button(">");
@@ -69,6 +69,7 @@ public class Main extends Application {
         next = new Button(">>");
         next.setMinWidth(50);
         next.setMaxWidth(50);
+        next.setOnAction(e -> next());
         grid.add(next, 2, 2, 1, 1);
 
         timeSlider = new Slider();
@@ -76,7 +77,7 @@ public class Main extends Application {
         timeSlider.setMaxWidth(250);
         grid.add(timeSlider, 3,2,4,1);
 
-        timeDisplay = new Label("0:00 / 0:00");
+        timeDisplay = new Label("0:0 / 0:0");
         grid.add(timeDisplay, 7,2,2,1);
 
 

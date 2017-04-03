@@ -12,7 +12,7 @@ public class DataSource {
 
         for(int i = 0; i < files.length; i++){
             Media tempData = new Media(files[i].toURI().toString());
-            Song tempSong = new Song(tempData);
+            Song tempSong = new Song(tempData, files[i]);
             songs.add(tempSong);
         }
 
