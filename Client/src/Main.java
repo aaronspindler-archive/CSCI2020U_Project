@@ -15,6 +15,9 @@ import java.io.File;
 
 
 public class Main extends Application {
+
+    static final String baseDirectory = "clientMusic/";
+
     MenuBar menuBar;
     Menu fileMenu;
     MenuItem exitMenuItem;
@@ -48,6 +51,7 @@ public class Main extends Application {
         songList = new ListView<>();
         songList.setMinWidth(150);
         songList.setMaxWidth(150);
+        songList.setItems(DataSource.getAllSongs());
         grid.add(songList, 0, 1, 3,1);
 
         prev = new Button("<<");
@@ -71,8 +75,9 @@ public class Main extends Application {
         timeSlider.setMaxWidth(300);
         grid.add(timeSlider, 3,2,3,1);
 
+
         String file = "excellent.mp3";
-        Media song = new Media(new File(file).toURI().toString());
+        Media song = new Media(new File(baseDirectory + file).toURI().toString());
         mediaPlayer = new MediaPlayer(song);
 
 
@@ -80,6 +85,8 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
+
 
     public void prev(){
 
