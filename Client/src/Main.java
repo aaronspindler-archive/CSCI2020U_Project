@@ -23,6 +23,7 @@ public class Main extends Application {
     MenuItem exitMenuItem;
     Button play, prev, next;
     Slider timeSlider;
+    Label timeDisplay;
     ListView<Song> songList;
 
     MediaPlayer mediaPlayer;
@@ -46,13 +47,13 @@ public class Main extends Application {
         fileMenu.getItems().add(exitMenuItem);
         menuBar.getMenus().add(fileMenu);
 
-        grid.add(menuBar,0,0,12,1);
+        grid.add(menuBar,0,0,8,1);
 
         songList = new ListView<>();
-        songList.setMinWidth(150);
-        songList.setMaxWidth(150);
+        songList.setMinWidth(300);
+        songList.setMaxWidth(300);
         songList.setItems(DataSource.getAllSongs());
-        grid.add(songList, 0, 1, 3,1);
+        grid.add(songList, 0, 1, 6,1);
 
         prev = new Button("<<");
         prev.setMinWidth(50);
@@ -71,9 +72,12 @@ public class Main extends Application {
         grid.add(next, 2, 2, 1, 1);
 
         timeSlider = new Slider();
-        timeSlider.setMinWidth(300);
-        timeSlider.setMaxWidth(300);
-        grid.add(timeSlider, 3,2,3,1);
+        timeSlider.setMinWidth(250);
+        timeSlider.setMaxWidth(250);
+        grid.add(timeSlider, 3,2,4,1);
+
+        timeDisplay = new Label("0:00 / 0:00");
+        grid.add(timeDisplay, 7,2,2,1);
 
 
         String file = "excellent.mp3";
@@ -81,7 +85,7 @@ public class Main extends Application {
         mediaPlayer = new MediaPlayer(song);
 
 
-        Scene scene = new Scene(grid, 450,400);
+        Scene scene = new Scene(grid, 500,400);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
