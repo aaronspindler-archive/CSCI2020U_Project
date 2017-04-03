@@ -12,8 +12,7 @@ import java.io.*;
 
 
 public class Song {
-    private String songName;
-    private String artist;
+    private String songName, artist, composer, genre, album;
     private Media data;
     private File file;
 
@@ -36,17 +35,11 @@ public class Song {
             parser.parse(input, handler, metadata, parseCtx);
             input.close();
 
-//            Retrieve the necessary info from metadata
-//            Names - title, xmpDM:artist etc. - mentioned below may differ based
-//            System.out.println("----------------------------------------------");
-//            System.out.println("Title: " + metadata.get("title"));
-//            System.out.println("Artists: " + metadata.get("xmpDM:artist"));
-//            System.out.println("Composer : "+metadata.get("xmpDM:composer"));
-//            System.out.println("Genre : "+metadata.get("xmpDM:genre"));
-//            System.out.println("Album : "+metadata.get("xmpDM:album"));
-
             songName = metadata.get("title");
             artist = metadata.get("xmpDM:artist");
+            composer = metadata.get("xmpDM:composer");
+            genre = metadata.get("xmpDM:genre");
+            album = metadata.get("xmpDM:album");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -67,8 +60,16 @@ public class Song {
         return artist;
     }
 
-    public Media getData() {
-        return data;
+    public String getComposer() {
+        return composer;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public String getAlbum() {
+        return album;
     }
 
     public String toString(){
@@ -77,7 +78,7 @@ public class Song {
         } else if(songName != null){
             return songName;
         } else{
-            return data.getSource();
+            return file.toString();
         }
     }
 }
