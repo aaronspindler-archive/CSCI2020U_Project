@@ -1,10 +1,13 @@
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -148,7 +151,6 @@ public class Main extends Application {
     public void next(){
         mediaPlayer.stop();
         songList.getSelectionModel().selectNext();
-        System.out.println(mediaPlayer.getTotalDuration());
         play();
     }
 
@@ -166,7 +168,25 @@ public class Main extends Application {
             public void run() {
                 timeSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
                 timeSlider.setMin(0.0);
-                timeSlider.setValue(0.0);
+                timeSlider.setValue(time.toSeconds());
+            }
+        });
+        mediaPlayer.setOnPaused(new Runnable() {
+            @Override
+            public void run() {
+                playButton.setText(">");
+                isPlaying = false;
+            }
+        });
+        mediaPlayer.setOnPlaying(new Runnable() {
+            @Override
+            public void run() {
+                playButton.setText("||");
+                if (isAtEnd) {
+                    mediaPlayer.seek(time.multiply(timeSlider.getValue()));
+                    isAtEnd = false;
+                }
+                isPlaying = true;
             }
         });
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
@@ -176,18 +196,20 @@ public class Main extends Application {
             }
         });
 
-        if (!isPlaying) {
-            playButton.setText("||");
-            if (isAtEnd) {
-                mediaPlayer.seek(time.multiply(timeSlider.getValue()));
-                isAtEnd = false;
+        timeSlider.valueProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                if (timeSlider.isValueChanging()) {
+                    mediaPlayer.seek(time.multiply(timeSlider.getValue()/100));
+                    System.out.println(time);
+                }
             }
+        });
+
+        if (!isPlaying) {
             mediaPlayer.play();
-            isPlaying = true;
         } else {
             mediaPlayer.pause();
-            playButton.setText(">");
-            isPlaying = false;
         }
     }
 
