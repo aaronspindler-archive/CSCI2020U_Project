@@ -21,8 +21,8 @@ public class Main extends Application {
     Menu fileMenu;
     MenuItem exitMenuItem;
     Button play, prev, next;
-    Slider timeSlider;
-    Label timeDisplay;
+    Slider timeSlider, volumeSlider;
+    Label timeDisplay, volumeLabel;
     ListView<Song> songList;
     int index = 0;
 
@@ -68,6 +68,21 @@ public class Main extends Application {
             }
         });
 
+        volumeLabel = new Label("Volume: ");
+        grid.add(volumeLabel, 7, 1, 1, 1);
+
+        volumeSlider = new Slider();
+        volumeSlider.setValue(1.0);
+        volumeSlider.setMax(1.0);
+        volumeSlider.setMin(0.0);
+        grid.add(volumeSlider, 8, 1, 1, 1);
+
+        volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                mediaPlayer.setVolume(volumeSlider.getValue());
+            }
+        });
+
         prev = new Button("<<");
         prev.setMinWidth(50);
         prev.setMaxWidth(50);
@@ -92,7 +107,7 @@ public class Main extends Application {
         grid.add(timeSlider, 3,2,4,1);
 
         timeDisplay = new Label("0:0 / 0:0");
-        grid.add(timeDisplay, 7,2,2,1);
+        grid.add(timeDisplay, 8,2,2,1);
 
 
         String file = "excellent.mp3";
@@ -150,7 +165,6 @@ public class Main extends Application {
         timeSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
         timeSlider.setMin(0.0);
         timeSlider.setValue(mediaPlayer.getStartTime().toSeconds());
-//        time = mediaPlayer.getStartTime();
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
             public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
