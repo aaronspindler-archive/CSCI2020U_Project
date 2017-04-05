@@ -10,7 +10,6 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import java.io.File;
 
 
 public class Main extends Application {
@@ -24,6 +23,7 @@ public class Main extends Application {
     Slider timeSlider, volumeSlider;
     Label timeDisplay, volumeLabel;
     ListView<Song> songList;
+
     int index = 0;
 
     MediaPlayer mediaPlayer;
@@ -128,8 +128,9 @@ public class Main extends Application {
         });
 
 
-        String file = "excellent.mp3";
-        Media song = new Media(new File(baseDirectory + file).toURI().toString());
+        Media song = DataSource.getAllSongs().get(0).getData();
+        songList.getSelectionModel().select(0);
+        songList.getFocusModel().focus(0);
         mediaPlayer = new MediaPlayer(song);
 
 
@@ -139,31 +140,14 @@ public class Main extends Application {
     }
 
     public void prev(){
-        songList.getSelectionModel().selectPrevious();
-        songList.getFocusModel().focusPrevious();
         mediaPlayer.stop();
-        incrementIndex(-1);
-        String file = songList.getItems().get(index).getFileName();
-        System.out.println(file);
-        Media song = new Media(new File(baseDirectory + file).toURI().toString());
-        mediaPlayer = new MediaPlayer(song);
-        isPlaying = false;
-        isAtEnd = false;
-        timeSlider.setValue(mediaPlayer.getStartTime().toSeconds());
+        songList.getSelectionModel().selectPrevious();
         play();
     }
 
     public void next(){
-        songList.getSelectionModel().selectNext();
-        songList.getFocusModel().focusNext();
         mediaPlayer.stop();
-        incrementIndex(1);
-        String file = songList.getItems().get(index).getFileName();
-        Media song = new Media(new File(baseDirectory + file).toURI().toString());
-        mediaPlayer = new MediaPlayer(song);
-        isPlaying = false;
-        isAtEnd = false;
-        timeSlider.setValue(mediaPlayer.getStartTime().toSeconds());
+        songList.getSelectionModel().selectNext();
         play();
     }
 
@@ -175,28 +159,10 @@ public class Main extends Application {
 
     }
 
-    public void incrementIndex(int shift) {
-        if (endOfList(shift)) {
-            index = 0;
-        } else if (startOfList(shift)) {
-            index = songList.getItems().size()-1;
-        } else {
-            index += shift;
-        }
-    }
-
-    public boolean endOfList(int shift) {
-        return (index+shift) > songList.getItems().size()-1;
-    }
-
-    public boolean startOfList(int shift) {
-        return (index+shift) < 0;
-    }
-
     public void play() {
         timeSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
         timeSlider.setMin(0.0);
-        timeSlider.setValue(mediaPlayer.getStartTime().toSeconds());
+        timeSlider.setValue(0.0);
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
             public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
