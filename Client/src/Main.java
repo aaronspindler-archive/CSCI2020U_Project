@@ -1,19 +1,15 @@
 import javafx.application.Application;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 
 public class Main extends Application {
 
@@ -41,7 +37,7 @@ public class Main extends Application {
         grid.setAlignment(Pos.TOP_LEFT);
 
         menuBar = new MenuBar();
-        fileMenu = new Menu("File");
+        fileMenu = new Menu("Options");
 
         exitMenuItem = new MenuItem("Exit");
         exitMenuItem.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
@@ -94,23 +90,24 @@ public class Main extends Application {
         downloadButton.setMinWidth(100);
         downloadButton.setMaxWidth(100);
         downloadButton.setOnAction(e -> download());
-        //grid.add(downloadButton, 6, 3, 2, 1);
+//        grid.add(downloadButton, 6, 3, 2, 1);
 
         shuffleButton = new Button("Shuffle");
         shuffleButton.setMinWidth(100);
         shuffleButton.setMaxWidth(100);
         shuffleButton.setOnAction(e -> shuffle());
-        //grid.add(shuffleButton, 10, 3, 2, 1);
+//        grid.add(shuffleButton, 10, 3, 2, 1);
 
         timeSlider = new Slider();
         timeSlider.setMinWidth(470);
         timeSlider.setMaxWidth(470);
         grid.add(timeSlider, 0,2,12,1);
 
-        timeDisplay = new Label("0:0 / 0:0");
+        timeDisplay = new Label("0:00 / 0:00");
         timeDisplay.setMinWidth(470);
         timeDisplay.setMaxWidth(470);
         timeDisplay.setAlignment(Pos.CENTER);
+        timeDisplay.setMouseTransparent(true);
         grid.add(timeDisplay, 0,2,12,1);
 
         volumeLabel = new Label("Volume: ");
@@ -144,13 +141,21 @@ public class Main extends Application {
 
     public void prev(){
         mediaPlayer.stop();
-        songList.getSelectionModel().selectPrevious();
+        if (index == 0) {
+            songList.getSelectionModel().select(songList.getItems().size()-1);
+        } else {
+            songList.getSelectionModel().selectPrevious();
+        }
         play();
     }
 
     public void next(){
         mediaPlayer.stop();
-        songList.getSelectionModel().selectNext();
+        if (index == songList.getItems().size()-1) {
+            songList.getSelectionModel().select(0);
+        }  else {
+            songList.getSelectionModel().selectNext();
+        }
         play();
     }
 
@@ -168,7 +173,7 @@ public class Main extends Application {
             public void run() {
                 timeSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
                 timeSlider.setMin(0.0);
-                timeSlider.setValue(time.toSeconds());
+                timeSlider.setValue(0.0);
             }
         });
         mediaPlayer.setOnPaused(new Runnable() {
@@ -189,20 +194,17 @@ public class Main extends Application {
                 isPlaying = true;
             }
         });
+        mediaPlayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                next();
+            }
+        });
+
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
             public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
                 updateValues();
-            }
-        });
-
-        timeSlider.valueProperty().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                if (timeSlider.isValueChanging()) {
-                    mediaPlayer.seek(time.multiply(timeSlider.getValue()/100));
-                    System.out.println(time);
-                }
             }
         });
 
