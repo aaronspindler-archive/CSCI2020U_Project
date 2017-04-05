@@ -7,16 +7,23 @@
     - [x] Load file metadata
     - [ ] Add functionality to change song
         - [x] Change with list view
-        - [ ] Change with next and previous buttons
+        - [x] Change with next and previous buttons
     - [ ] Add functionality to change place in song with slider
     - [x] Add time display for current song
     - [x] Volume Slider
         - [x] UI
         - [x] Functionality
     - [ ] Album Artwork?
+    - [ ] Music Shuffle
+    - [ ] Song streaming from server
+    - [ ] Download song from server
 - Server
     - [ ] Add new files by url?
     - [ ] Add new files from folder
+    
+## Bugs
+- [ ] Time slider index disappears when previous or next song button is pressed
+
 ## Authors
 Aaron Spindler (xNovax)
 

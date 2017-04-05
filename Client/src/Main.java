@@ -73,30 +73,42 @@ public class Main extends Application {
         prevButton.setMinWidth(50);
         prevButton.setMaxWidth(50);
         prevButton.setOnAction(e -> prev());
-        grid.add(prevButton, 0, 2, 2,1);
+        grid.add(prevButton, 0, 3, 2,1);
 
         playButton = new Button(">");
-        playButton.setMinWidth(50);
-        playButton.setMaxWidth(50);
+        playButton.setMinWidth(100);
+        playButton.setMaxWidth(100);
         playButton.setOnAction(e -> play());
-        grid.add(playButton,2,2,2,1);
+        grid.add(playButton,2,3,2,1);
 
         nextButton = new Button(">>");
         nextButton.setMinWidth(50);
         nextButton.setMaxWidth(50);
         nextButton.setOnAction(e -> next());
-        grid.add(nextButton, 4, 2, 2, 1);
+        grid.add(nextButton, 4, 3, 2, 1);
+
+        downloadButton = new Button("Download");
+        downloadButton.setMinWidth(100);
+        downloadButton.setMaxWidth(100);
+        downloadButton.setOnAction(e -> download());
+        //grid.add(downloadButton, 6, 3, 2, 1);
+
+        shuffleButton = new Button("Shuffle");
+        shuffleButton.setMinWidth(100);
+        shuffleButton.setMaxWidth(100);
+        shuffleButton.setOnAction(e -> shuffle());
+        //grid.add(shuffleButton, 10, 3, 2, 1);
 
         timeSlider = new Slider();
         timeSlider.setMinWidth(470);
         timeSlider.setMaxWidth(470);
-        grid.add(timeSlider, 0,3,12,1);
+        grid.add(timeSlider, 0,2,12,1);
 
         timeDisplay = new Label("0:0 / 0:0");
         timeDisplay.setMinWidth(470);
         timeDisplay.setMaxWidth(470);
         timeDisplay.setAlignment(Pos.CENTER);
-        grid.add(timeDisplay, 0,3,12,1);
+        grid.add(timeDisplay, 0,2,12,1);
 
         volumeLabel = new Label("Volume: ");
         grid.add(volumeLabel, 0, 4, 6, 1);
@@ -127,6 +139,8 @@ public class Main extends Application {
     }
 
     public void prev(){
+        songList.getSelectionModel().selectPrevious();
+        songList.getFocusModel().focusPrevious();
         mediaPlayer.stop();
         incrementIndex(-1);
         String file = songList.getItems().get(index).getFileName();
@@ -140,6 +154,8 @@ public class Main extends Application {
     }
 
     public void next(){
+        songList.getSelectionModel().selectNext();
+        songList.getFocusModel().focusNext();
         mediaPlayer.stop();
         incrementIndex(1);
         String file = songList.getItems().get(index).getFileName();
@@ -149,6 +165,14 @@ public class Main extends Application {
         isAtEnd = false;
         timeSlider.setValue(mediaPlayer.getStartTime().toSeconds());
         play();
+    }
+
+    public void download(){
+
+    }
+
+    public void shuffle(){
+
     }
 
     public void incrementIndex(int shift) {
