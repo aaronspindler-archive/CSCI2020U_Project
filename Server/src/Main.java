@@ -1,25 +1,14 @@
-import javafx.application.Application;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
+import java.util.Scanner;
 
-
-public class Main extends Application {
-
-    public void start(Stage primaryStage) throws Exception{
-        primaryStage.setTitle("Music Player - Server");
-
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.TOP_LEFT);
-
-
-        Scene scene = new Scene(grid, 450,400);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
+public class Main {
+    static final int PORT = 8080;
     public static void main(String[] args){
-        launch(args);
+        Scanner input = new Scanner(System.in);
+
+        System.out.println("=== Music Server ===");
+
+        FileServer server = new FileServer(PORT);
+        Thread serverThread = new Thread(server);
+        serverThread.start();
     }
 }
