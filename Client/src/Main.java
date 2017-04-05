@@ -20,7 +20,7 @@ public class Main extends Application {
     MenuBar menuBar;
     Menu fileMenu;
     MenuItem exitMenuItem;
-    Button play, prev, next;
+    Button playButton, prevButton, nextButton, downloadButton, shuffleButton;
     Slider timeSlider, volumeSlider;
     Label timeDisplay, volumeLabel;
     ListView<Song> songList;
@@ -47,13 +47,13 @@ public class Main extends Application {
         fileMenu.getItems().add(exitMenuItem);
         menuBar.getMenus().add(fileMenu);
 
-        grid.add(menuBar,0,0,8,1);
+        grid.add(menuBar,0,0,12,1);
 
         songList = new ListView<Song>();
-        songList.setMinWidth(300);
-        songList.setMaxWidth(300);
         songList.setItems(DataSource.getAllSongs());
-        grid.add(songList, 0, 1, 6,1);
+        songList.setMinWidth(470);
+        songList.setMaxWidth(470);
+        grid.add(songList, 0, 1, 12,1);
 
         songList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Song>() {
             public void changed(ObservableValue<? extends Song> observable, Song oldValue, Song newValue) {
@@ -61,21 +61,53 @@ public class Main extends Application {
                     mediaPlayer.stop();
                     isPlaying = false;
                     isAtEnd = false;
-                    play.setText(">");
+                    playButton.setText(">");
                 }
                 mediaPlayer = new MediaPlayer(newValue.getData());
                 index = songList.getItems().indexOf(newValue);
             }
         });
 
+
+        prevButton = new Button("<<");
+        prevButton.setMinWidth(50);
+        prevButton.setMaxWidth(50);
+        prevButton.setOnAction(e -> prev());
+        grid.add(prevButton, 0, 2, 2,1);
+
+        playButton = new Button(">");
+        playButton.setMinWidth(50);
+        playButton.setMaxWidth(50);
+        playButton.setOnAction(e -> play());
+        grid.add(playButton,2,2,2,1);
+
+        nextButton = new Button(">>");
+        nextButton.setMinWidth(50);
+        nextButton.setMaxWidth(50);
+        nextButton.setOnAction(e -> next());
+        grid.add(nextButton, 4, 2, 2, 1);
+
+        timeSlider = new Slider();
+        timeSlider.setMinWidth(470);
+        timeSlider.setMaxWidth(470);
+        grid.add(timeSlider, 0,3,12,1);
+
+        timeDisplay = new Label("0:0 / 0:0");
+        timeDisplay.setMinWidth(470);
+        timeDisplay.setMaxWidth(470);
+        timeDisplay.setAlignment(Pos.CENTER);
+        grid.add(timeDisplay, 0,3,12,1);
+
         volumeLabel = new Label("Volume: ");
-        grid.add(volumeLabel, 7, 1, 1, 1);
+        grid.add(volumeLabel, 0, 4, 6, 1);
 
         volumeSlider = new Slider();
         volumeSlider.setValue(1.0);
         volumeSlider.setMax(1.0);
         volumeSlider.setMin(0.0);
-        grid.add(volumeSlider, 8, 1, 1, 1);
+        volumeSlider.setMinWidth(100);
+        volumeSlider.setMaxWidth(100);
+        grid.add(volumeSlider, 6, 4, 6, 1);
 
         volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -83,39 +115,13 @@ public class Main extends Application {
             }
         });
 
-        prev = new Button("<<");
-        prev.setMinWidth(50);
-        prev.setMaxWidth(50);
-        prev.setOnAction(e -> prev());
-        grid.add(prev, 0, 2, 1,1);
-
-        play = new Button(">");
-        play.setMinWidth(50);
-        play.setMaxWidth(50);
-        play.setOnAction(e -> play());
-        grid.add(play,1,2,1,1);
-
-        next = new Button(">>");
-        next.setMinWidth(50);
-        next.setMaxWidth(50);
-        next.setOnAction(e -> next());
-        grid.add(next, 2, 2, 1, 1);
-
-        timeSlider = new Slider();
-        timeSlider.setMinWidth(250);
-        timeSlider.setMaxWidth(250);
-        grid.add(timeSlider, 3,2,4,1);
-
-        timeDisplay = new Label("0:0 / 0:0");
-        grid.add(timeDisplay, 8,2,2,1);
-
 
         String file = "excellent.mp3";
         Media song = new Media(new File(baseDirectory + file).toURI().toString());
         mediaPlayer = new MediaPlayer(song);
 
 
-        Scene scene = new Scene(grid, 500,400);
+        Scene scene = new Scene(grid, 470,400);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -129,6 +135,7 @@ public class Main extends Application {
         mediaPlayer = new MediaPlayer(song);
         isPlaying = false;
         isAtEnd = false;
+        timeSlider.setValue(mediaPlayer.getStartTime().toSeconds());
         play();
     }
 
@@ -140,6 +147,7 @@ public class Main extends Application {
         mediaPlayer = new MediaPlayer(song);
         isPlaying = false;
         isAtEnd = false;
+        timeSlider.setValue(mediaPlayer.getStartTime().toSeconds());
         play();
     }
 
@@ -173,7 +181,7 @@ public class Main extends Application {
         });
 
         if (!isPlaying) {
-            play.setText("||");
+            playButton.setText("||");
             if (isAtEnd) {
                 mediaPlayer.seek(time.multiply(timeSlider.getValue()));
                 isAtEnd = false;
@@ -182,7 +190,7 @@ public class Main extends Application {
             isPlaying = true;
         } else {
             mediaPlayer.pause();
-            play.setText(">");
+            playButton.setText(">");
             isPlaying = false;
         }
     }
