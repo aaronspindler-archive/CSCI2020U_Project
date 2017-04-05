@@ -1,4 +1,5 @@
 import javafx.scene.media.Media;
+import javafx.util.Duration;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;

@@ -127,11 +127,11 @@ public class Main extends Application {
             }
         });
 
-
         Media song = DataSource.getAllSongs().get(0).getData();
         songList.getSelectionModel().select(0);
         songList.getFocusModel().focus(0);
         mediaPlayer = new MediaPlayer(song);
+        mediaPlayer.stop();
 
 
         Scene scene = new Scene(grid, 470,400);
@@ -148,6 +148,7 @@ public class Main extends Application {
     public void next(){
         mediaPlayer.stop();
         songList.getSelectionModel().selectNext();
+        System.out.println(mediaPlayer.getTotalDuration());
         play();
     }
 
@@ -160,9 +161,14 @@ public class Main extends Application {
     }
 
     public void play() {
-        timeSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
-        timeSlider.setMin(0.0);
-        timeSlider.setValue(0.0);
+        mediaPlayer.setOnReady(new Runnable() {
+            @Override
+            public void run() {
+                timeSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
+                timeSlider.setMin(0.0);
+                timeSlider.setValue(0.0);
+            }
+        });
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
             public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
@@ -195,7 +201,7 @@ public class Main extends Application {
         int minutes = (int)d.toSeconds()/60;
         int seconds = (int)d.toSeconds()%60;
 
-        return (minutes + ":" + seconds);
+        return (String.format("%d:%02d", minutes, seconds));
     }
 
     public static void main(String[] args){
