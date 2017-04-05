@@ -24,6 +24,7 @@ public class Main extends Application {
     Slider timeSlider;
     Label timeDisplay;
     ListView<Song> songList;
+    int index = 0;
 
     MediaPlayer mediaPlayer;
     Duration time;
@@ -63,6 +64,7 @@ public class Main extends Application {
                     play.setText(">");
                 }
                 mediaPlayer = new MediaPlayer(newValue.getData());
+                index = songList.getItems().indexOf(newValue);
             }
         });
 
@@ -103,21 +105,52 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-
-
     public void prev(){
-
+        mediaPlayer.stop();
+        incrementIndex(-1);
+        String file = songList.getItems().get(index).getFileName();
+        System.out.println(file);
+        Media song = new Media(new File(baseDirectory + file).toURI().toString());
+        mediaPlayer = new MediaPlayer(song);
+        isPlaying = false;
+        isAtEnd = false;
+        play();
     }
 
     public void next(){
+        mediaPlayer.stop();
+        incrementIndex(1);
+        String file = songList.getItems().get(index).getFileName();
+        Media song = new Media(new File(baseDirectory + file).toURI().toString());
+        mediaPlayer = new MediaPlayer(song);
+        isPlaying = false;
+        isAtEnd = false;
+        play();
+    }
 
+    public void incrementIndex(int shift) {
+        if (endOfList(shift)) {
+            index = 0;
+        } else if (startOfList(shift)) {
+            index = songList.getItems().size()-1;
+        } else {
+            index += shift;
+        }
+    }
+
+    public boolean endOfList(int shift) {
+        return (index+shift) > songList.getItems().size()-1;
+    }
+
+    public boolean startOfList(int shift) {
+        return (index+shift) < 0;
     }
 
     public void play() {
         timeSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
         timeSlider.setMin(0.0);
         timeSlider.setValue(mediaPlayer.getStartTime().toSeconds());
-        time = mediaPlayer.getStartTime();
+//        time = mediaPlayer.getStartTime();
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
             public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {

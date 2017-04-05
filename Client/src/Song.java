@@ -76,6 +76,8 @@ public class Song {
         return data;
     }
 
+    public String getFileName() { return this.file.getName(); }
+
     public String toString(){
         if((songName != null) && (artist != null)) {
             return (songName + " - " + artist);
