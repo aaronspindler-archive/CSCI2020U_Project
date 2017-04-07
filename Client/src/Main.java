@@ -4,6 +4,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
@@ -64,6 +65,18 @@ public class Main extends Application {
                 }
                 mediaPlayer = new MediaPlayer(newValue.getData());
                 index = songList.getItems().indexOf(newValue);
+            }
+        });
+
+        songList.setOnKeyPressed(e -> {
+            if(e.getCode() == KeyCode.ENTER){
+                if(isPlaying){
+                    mediaPlayer.pause();
+                    isPlaying = false;
+                    playButton.setText(">");
+                }else{
+                    play();
+                }
             }
         });
 
