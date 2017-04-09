@@ -25,25 +25,25 @@ public class Main extends Application {
 
     static final String baseDirectory = "clientMusic/";
 
-    MenuBar menuBar;
-    Menu fileMenu;
-    MenuItem exitMenuItem;
-    Button playButton, prevButton, nextButton, downloadButton, shuffleButton;
-    Slider timeSlider, volumeSlider;
-    Label timeDisplay, volumeLabel;
+    private MenuBar menuBar;
+    private Menu fileMenu;
+    private MenuItem exitMenuItem;
+    private Button playButton, prevButton, nextButton, downloadButton, shuffleButton;
+    private Slider timeSlider, volumeSlider;
+    private Label timeDisplay, volumeLabel;
     static ListView<Song> songList;
 
-    int index = 0;
-    int shuffleIndex = 0;
+    private int index = 0;
+    private int shuffleIndex = 0;
 
-    MediaPlayer mediaPlayer;
-    Duration time;
-    Boolean isPlaying = false;
-    Boolean isAtEnd = false;
-    Boolean repeatOne = false;
-    Boolean shuffled = false;
-    Socket socket;
-    int[] shuffleOrder;
+    private MediaPlayer mediaPlayer;
+    private Duration time;
+    private Boolean isPlaying = false;
+    private Boolean isAtEnd = false;
+    private Boolean repeatOne = false;
+    private Boolean shuffled = false;
+    private Socket socket;
+    private int[] shuffleOrder;
 
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Music Player - Client");
@@ -131,11 +131,25 @@ public class Main extends Application {
         nextButton.setOnAction(e -> next());
         grid.add(nextButton, 4, 3, 2, 1);
 
-        downloadButton = new Button("Download");
-        downloadButton.setMinWidth(100);
-        downloadButton.setMaxWidth(100);
-        downloadButton.setOnAction(e -> download());
-//        grid.add(downloadButton, 6, 3, 2, 1);
+        prevButton.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.LEFT) {
+                if (isPlaying) {
+                    mediaPlayer.seek(time.subtract(Duration.millis(100)));
+                }
+            }
+        });
+
+        nextButton.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.RIGHT) {
+                if (isPlaying) {
+                    mediaPlayer.seek(time.add(Duration.millis(100)));
+                }
+            }
+        });
+
+        Label spacer = new Label("    \t\t ");
+        spacer.setMouseTransparent(true);
+        grid.add(spacer, 6, 3, 2, 1);
 
         shuffleButton = new Button("Shuffle");
         shuffleButton.setMinWidth(100);
@@ -147,7 +161,16 @@ public class Main extends Application {
                 shuffled = false;
             }
         });
-//        grid.add(shuffleButton, 10, 3, 2, 1);
+        grid.add(shuffleButton, 10, 3, 2, 1);
+
+        Button repeatButton = new Button("Repeat1");
+        repeatButton.setMinWidth(100);
+        shuffleButton.setMaxWidth(100);
+        repeatButton.setOnAction(e -> { repeat(); });
+        Label spacer2 = new Label("    \t\t ");
+        spacer2.setMouseTransparent(true);
+        grid.add(spacer2, 12, 3, 2, 1);
+        grid.add(repeatButton, 14, 3, 2, 1);
 
         timeSlider = new Slider();
         timeSlider.setMinWidth(470);
@@ -259,6 +282,7 @@ public class Main extends Application {
         }
     }
 
+    public void repeat() { repeatOne = !repeatOne; }
 
     public void shuffle(){
         shuffled = true;
@@ -314,7 +338,7 @@ public class Main extends Application {
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
-                next();
+                if (!repeatOne) { next(); }
             }
         });
 

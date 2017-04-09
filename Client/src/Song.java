@@ -73,8 +73,7 @@ public class Song {
         return album;
     }
 
-    public void setFlag(String status) { this.flag = status; }
-
+    public void setFlag(String status) { this.flag = status; this.artist = this.artist + "\t\t\t-" + status; }
     public String getFlag() { return flag; }
 
     public Media getData(){
