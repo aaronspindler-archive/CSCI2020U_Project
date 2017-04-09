@@ -109,6 +109,14 @@ public class Main extends Application {
                 }else{
                     play();
                 }
+            } else if (e.getCode() == KeyCode.LEFT) {
+                if (time.greaterThanOrEqualTo(Duration.ZERO)) {
+                    mediaPlayer.seek(time.subtract(Duration.millis(500)));
+                }
+            } else if (e.getCode() == KeyCode.RIGHT) {
+                if (time.lessThanOrEqualTo(mediaPlayer.getTotalDuration())) {
+                    mediaPlayer.seek(time.add(Duration.millis(500)));
+                }
             }
         });
 
@@ -130,22 +138,6 @@ public class Main extends Application {
         nextButton.setMaxWidth(50);
         nextButton.setOnAction(e -> next());
         grid.add(nextButton, 4, 3, 2, 1);
-
-        prevButton.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.LEFT) {
-                if (isPlaying) {
-                    mediaPlayer.seek(time.subtract(Duration.millis(100)));
-                }
-            }
-        });
-
-        nextButton.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.RIGHT) {
-                if (isPlaying) {
-                    mediaPlayer.seek(time.add(Duration.millis(100)));
-                }
-            }
-        });
 
         Label spacer = new Label("    \t\t ");
         spacer.setMouseTransparent(true);
@@ -324,6 +316,7 @@ public class Main extends Application {
                 isPlaying = false;
             }
         });
+
         mediaPlayer.setOnPlaying(new Runnable() {
             @Override
             public void run() {
@@ -335,10 +328,15 @@ public class Main extends Application {
                 isPlaying = true;
             }
         });
+
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
-                if (!repeatOne) { next(); }
+                if (!repeatOne) {
+                    next();
+                } else {
+                    mediaPlayer.seek(Duration.ZERO);
+                }
             }
         });
 
