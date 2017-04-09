@@ -12,6 +12,11 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Random;
+import java.util.Set;
+
 public class Main extends Application {
 
     static final String baseDirectory = "clientMusic/";
@@ -25,11 +30,15 @@ public class Main extends Application {
     ListView<Song> songList;
 
     int index = 0;
+    int shuffleIndex = 0;
 
     MediaPlayer mediaPlayer;
     Duration time;
     Boolean isPlaying = false;
     Boolean isAtEnd = false;
+    Boolean repeatOne = false;
+    Boolean shuffled = false;
+    int[] shuffleOrder;
 
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Music Player - Client");
@@ -108,7 +117,13 @@ public class Main extends Application {
         shuffleButton = new Button("Shuffle");
         shuffleButton.setMinWidth(100);
         shuffleButton.setMaxWidth(100);
-        shuffleButton.setOnAction(e -> shuffle());
+        shuffleButton.setOnAction(e -> {
+            if (!shuffled) {
+                shuffle();
+            } else {
+                shuffled = false;
+            }
+        });
 //        grid.add(shuffleButton, 10, 3, 2, 1);
 
         timeSlider = new Slider();
@@ -146,7 +161,6 @@ public class Main extends Application {
         mediaPlayer = new MediaPlayer(song);
         mediaPlayer.stop();
 
-
         Scene scene = new Scene(grid, 470,400);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -154,20 +168,38 @@ public class Main extends Application {
 
     public void prev(){
         mediaPlayer.stop();
-        if (index == 0) {
-            songList.getSelectionModel().select(songList.getItems().size()-1);
+        if(!shuffled) {
+            if (index == 0) {
+                songList.getSelectionModel().select(songList.getItems().size() - 1);
+            } else {
+                songList.getSelectionModel().selectPrevious();
+            }
         } else {
-            songList.getSelectionModel().selectPrevious();
+            shuffleIndex -= 1;
+            if (shuffleIndex <= 0) {
+                shuffleIndex = shuffleOrder.length-1;
+            }
+            songList.getSelectionModel().select(shuffleOrder[shuffleIndex]);
         }
         play();
     }
 
     public void next(){
         mediaPlayer.stop();
-        if (index == songList.getItems().size()-1) {
-            songList.getSelectionModel().select(0);
-        }  else {
-            songList.getSelectionModel().selectNext();
+        if (!shuffled) {
+            if (index == songList.getItems().size() - 1) {
+                songList.getSelectionModel().select(0);
+            } else {
+                songList.getSelectionModel().selectNext();
+            }
+        } else {
+            shuffleIndex += 1;
+            if (shuffleIndex <= shuffleOrder.length) {
+                if (shuffleIndex == shuffleOrder.length-1) {
+                    shuffleIndex = 0;
+                }
+                songList.getSelectionModel().select(shuffleOrder[shuffleIndex]);
+            }
         }
         play();
     }
@@ -177,7 +209,18 @@ public class Main extends Application {
     }
 
     public void shuffle(){
-
+        shuffled = true;
+        Random rng = new Random();
+        Set<Integer> rand = new LinkedHashSet<>();
+        while (rand.size() < songList.getItems().size()-1) {
+            Integer r = rng.nextInt(songList.getItems().size()-1);
+            rand.add(r);
+        }
+        shuffleOrder = new int[rand.size()];
+        int ind = 0;
+        for (Iterator i = rand.iterator(); i.hasNext();) {
+            shuffleOrder[ind++] = (int) i.next();
+        }
     }
 
     public void play() {
