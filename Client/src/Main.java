@@ -31,7 +31,7 @@ public class Main extends Application {
     Button playButton, prevButton, nextButton, downloadButton, shuffleButton;
     Slider timeSlider, volumeSlider;
     Label timeDisplay, volumeLabel;
-    ListView<Song> songList;
+    static ListView<Song> songList;
 
     int index = 0;
     int shuffleIndex = 0;
@@ -183,6 +183,10 @@ public class Main extends Application {
         songList.getFocusModel().focus(0);
         mediaPlayer = new MediaPlayer(song);
         mediaPlayer.stop();
+
+        BackgroundUpdater backgroundUpdater = new BackgroundUpdater();
+        Thread backgroundUpdaterThread = new Thread(backgroundUpdater);
+        backgroundUpdaterThread.start();
 
         Scene scene = new Scene(grid, 470,400);
         primaryStage.setScene(scene);

@@ -14,15 +14,15 @@
         - [x] UI
         - [x] Functionality
     - [ ] Album Artwork?
-    - [ ] Music Shuffle
-    - [ ] Song streaming from server
-    - [ ] Download song from server
+    - [x] Music Shuffle
+    - [x] Song streaming from server (workaround implemented)
+    - [x] Download song from server
 - Server
     - [ ] Add new files by url?
     - [ ] Add new files from folder
     
 ## Bugs
-- [ ] Time slider index disappears when previous or next song button is pressed
+- [x] Time slider index disappears when previous or next song button is pressed
 
 ## Authors
 Aaron Spindler (xNovax)

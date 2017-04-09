@@ -9,8 +9,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class DataSource {
+
+    static ObservableList<Song> songs = FXCollections.observableArrayList();
     static public ObservableList<Song> getAllSongs(){
-        ObservableList<Song> songs = FXCollections.observableArrayList();
+        songs = FXCollections.observableArrayList();
         File rootDirectory = new File(Main.baseDirectory);
         File[] files = rootDirectory.listFiles();
 
