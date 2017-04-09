@@ -1,21 +1,25 @@
 import javafx.application.Application;
+import javafx.beans.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Random;
-import java.util.Set;
+import java.io.*;
+import java.net.Socket;
+import java.net.URL;
+import java.util.*;
+import java.util.Observable;
 
 public class Main extends Application {
 
@@ -38,6 +42,7 @@ public class Main extends Application {
     Boolean isAtEnd = false;
     Boolean repeatOne = false;
     Boolean shuffled = false;
+    Socket socket;
     int[] shuffleOrder;
 
     public void start(Stage primaryStage) throws Exception{
@@ -66,14 +71,32 @@ public class Main extends Application {
 
         songList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Song>() {
             public void changed(ObservableValue<? extends Song> observable, Song oldValue, Song newValue) {
-                if(isPlaying){
-                    mediaPlayer.stop();
-                    isPlaying = false;
-                    isAtEnd = false;
-                    playButton.setText(">");
+                if (newValue.getFlag().equals("SERVER FILE")) {
+                    System.out.println("downloading");
+                    download();
+                    System.out.println("downloaded");
+
+                    File temp = new File(baseDirectory + newValue.getFileName());
+                    Media m = new Media(temp.toURI().toString());
+                    if (isPlaying) {
+                        mediaPlayer.stop();
+                        isPlaying = false;
+                        isAtEnd = false;
+                        playButton.setText(">");
+                    }
+                    mediaPlayer = new MediaPlayer(m);
+                    newValue.setFlag("DELETE");
+                    index = songList.getItems().indexOf(newValue);
+                } else {
+                    if (isPlaying) {
+                        mediaPlayer.stop();
+                        isPlaying = false;
+                        isAtEnd = false;
+                        playButton.setText(">");
+                    }
+                    mediaPlayer = new MediaPlayer(newValue.getData());
+                    index = songList.getItems().indexOf(newValue);
                 }
-                mediaPlayer = new MediaPlayer(newValue.getData());
-                index = songList.getItems().indexOf(newValue);
             }
         });
 
@@ -167,6 +190,7 @@ public class Main extends Application {
     }
 
     public void prev(){
+        checkFlag();
         mediaPlayer.stop();
         if(!shuffled) {
             if (index == 0) {
@@ -185,6 +209,7 @@ public class Main extends Application {
     }
 
     public void next(){
+        checkFlag();
         mediaPlayer.stop();
         if (!shuffled) {
             if (index == songList.getItems().size() - 1) {
@@ -205,8 +230,31 @@ public class Main extends Application {
     }
 
     public void download(){
+        try {
+            socket = new Socket("localhost", 8080);
+            PrintWriter pw = new PrintWriter(socket.getOutputStream());
+//            if (localDirectory.(songList.getSelectionModel().getSelectedItem()))
+            pw.write("DOWNLOAD /" + songList.getSelectionModel().getSelectedItem().getFileName() + " HTTP/1.1\r\n");
+            pw.flush();
 
+            InputStream in = socket.getInputStream();
+            FileOutputStream fos = new FileOutputStream((new File(baseDirectory,
+                    songList.getSelectionModel().getSelectedItem().getFileName())));  //create new remote file
+
+            int length = -1;
+            byte[] buffer = new byte[1024];
+            while ((length = in.read(buffer)) > -1) {
+                fos.write(buffer, 0, length);           //save uploaded file data
+            }
+
+            fos.close();
+            in.close();
+            pw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     public void shuffle(){
         shuffled = true;
@@ -223,11 +271,20 @@ public class Main extends Application {
         }
     }
 
+    public void checkFlag() {
+        if (songList.getSelectionModel().getSelectedItem().getFlag().equals("DELETE")) {
+            File del = new File(baseDirectory +
+                    songList.getSelectionModel().getSelectedItem().getFileName());
+            del.delete();
+            songList.getSelectionModel().getSelectedItem().setFlag("SERVER FILE");
+        }
+    }
+
     public void play() {
         mediaPlayer.setOnReady(new Runnable() {
             @Override
             public void run() {
-                timeSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
+                timeSlider.setMax(1.0);
                 timeSlider.setMin(0.0);
                 timeSlider.setValue(0.0);
             }
@@ -244,7 +301,7 @@ public class Main extends Application {
             public void run() {
                 playButton.setText("||");
                 if (isAtEnd) {
-                    mediaPlayer.seek(time.multiply(timeSlider.getValue()));
+                    mediaPlayer.seek(time.multiply(timeSlider.getValue()/100));
                     isAtEnd = false;
                 }
                 isPlaying = true;
@@ -259,7 +316,8 @@ public class Main extends Application {
 
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
-            public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
+            public void changed(ObservableValue<? extends Duration> observable,
+                                        Duration oldValue, Duration newValue) {
                 updateValues();
             }
         });
@@ -273,8 +331,9 @@ public class Main extends Application {
 
     public void updateValues() {
         time = mediaPlayer.getCurrentTime();
-        timeSlider.setValue(time.toSeconds());
-        timeDisplay.setText(getFormattedTime(mediaPlayer.getCurrentTime()) + " / " + getFormattedTime(mediaPlayer.getTotalDuration()));
+        timeSlider.setValue(time.toSeconds() / mediaPlayer.getTotalDuration().toSeconds());
+        timeDisplay.setText(getFormattedTime(mediaPlayer.getCurrentTime()) +
+                " / " + getFormattedTime(mediaPlayer.getTotalDuration()));
     }
 
     public String getFormattedTime(Duration d){

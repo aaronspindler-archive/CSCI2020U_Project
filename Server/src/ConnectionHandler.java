@@ -4,7 +4,7 @@ import java.net.Socket;
 public class ConnectionHandler implements Runnable{
     private Socket socket;
     private DataOutputStream out;
-    private final static String WEB_ROOT = "remote";
+    private final static String WEB_ROOT = "serverMusic";
     private File remote = new File(WEB_ROOT);           //remote folder
 
     public ConnectionHandler(Socket socket){
@@ -23,6 +23,8 @@ public class ConnectionHandler implements Runnable{
                 String[] requestParts = request.split(" ");
                 String command = requestParts[0];
                 String fileName = requestParts[1];
+
+                System.out.println(command);
 
                 if (command.equalsIgnoreCase("DIR")) {              //respond to DIR commands
                     sendDirectory();

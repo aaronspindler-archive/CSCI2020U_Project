@@ -1,5 +1,4 @@
 import javafx.scene.media.Media;
-import javafx.util.Duration;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -13,13 +12,14 @@ import java.io.*;
 
 
 public class Song {
-    private String songName, artist, composer, genre, album;
+    private String songName, artist, composer, genre, album, flag;
     private Media data;
     private File file;
 
     public Song(Media data, File file){
         this.data = data;
         this.file = file;
+        flag = "local";
         getMetaData();
     }
 
@@ -72,6 +72,10 @@ public class Song {
     public String getAlbum() {
         return album;
     }
+
+    public void setFlag(String status) { this.flag = status; }
+
+    public String getFlag() { return flag; }
 
     public Media getData(){
         return data;
