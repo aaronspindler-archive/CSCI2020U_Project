@@ -1,7 +1,6 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -14,18 +13,18 @@ public class DataSource {
     static public ObservableList<Song> getAllSongs(){
         songs = FXCollections.observableArrayList();
         File rootDirectory = new File(Main.baseDirectory);
-        File[] files = rootDirectory.listFiles();
+        File[] files = rootDirectory.listFiles();               //list of files in local directory
 
         for(int i = 0; i < files.length; i++){
             Media tempData = new Media(files[i].toURI().toString());
             Song tempSong = new Song(tempData, files[i]);
-            songs.add(tempSong);
+            songs.add(tempSong);                                //add each file as a song
         }
 
         try {
             Socket socket = new Socket("localhost",8080);
             PrintWriter pw = new PrintWriter(socket.getOutputStream());
-            pw.write("DIR / HTTP/1.1\r\n");                         //send DIR request
+            pw.write("DIR / HTTP/1.1\r\n");                         //send DIR request for server file list
             pw.flush();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -33,7 +32,7 @@ public class DataSource {
             while ((file = br.readLine()) != null) {
                 File f = new File("serverMusic/" + file);
                 Media tempData = new Media(f.toURI().toString());
-                Song tempSong = new Song(tempData, f);
+                Song tempSong = new Song(tempData, f);                  //save server file in list
                 tempSong.setFlag("SERVER FILE");
                 songs.add(tempSong);
             }

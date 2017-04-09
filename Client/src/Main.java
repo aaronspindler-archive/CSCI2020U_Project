@@ -69,14 +69,15 @@ public class Main extends Application {
         songList.setMaxWidth(470);
         grid.add(songList, 0, 1, 12,1);
 
+        //listen for change of song
         songList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Song>() {
             public void changed(ObservableValue<? extends Song> observable, Song oldValue, Song newValue) {
-                if (newValue.getFlag().equals("SERVER FILE")) {
+                if (newValue.getFlag().equals("SERVER FILE")) {     //check if song is saved on the server
                     System.out.println("downloading");
-                    download();
+                    download();                                     //download
                     System.out.println("downloaded");
 
-                    File temp = new File(baseDirectory + newValue.getFileName());
+                    File temp = new File(baseDirectory + newValue.getFileName());   //create new file
                     Media m = new Media(temp.toURI().toString());
                     if (isPlaying) {
                         mediaPlayer.stop();
@@ -84,8 +85,8 @@ public class Main extends Application {
                         isAtEnd = false;
                         playButton.setText(">");
                     }
-                    mediaPlayer = new MediaPlayer(m);
-                    newValue.setFlag("DELETE");
+                    mediaPlayer = new MediaPlayer(m);               //play the server file
+                    newValue.setFlag("DELETE");                     //set flag to delete song once playback is halted
                     index = songList.getItems().indexOf(newValue);
                 } else {
                     if (isPlaying) {
@@ -94,14 +95,14 @@ public class Main extends Application {
                         isAtEnd = false;
                         playButton.setText(">");
                     }
-                    mediaPlayer = new MediaPlayer(newValue.getData());
-                    index = songList.getItems().indexOf(newValue);
+                    mediaPlayer = new MediaPlayer(newValue.getData());      //load new song into mediaplayer
+                    index = songList.getItems().indexOf(newValue);          //change index to selected song's index
                 }
             }
         });
 
         songList.setOnKeyPressed(e -> {
-            if(e.getCode() == KeyCode.ENTER){
+            if(e.getCode() == KeyCode.ENTER){           //play song on list by pressing enter
                 if(isPlaying){
                     mediaPlayer.pause();
                     isPlaying = false;
@@ -109,13 +110,15 @@ public class Main extends Application {
                 }else{
                     play();
                 }
-            } else if (e.getCode() == KeyCode.LEFT) {
+            } else if (e.getCode() == KeyCode.LEFT) {   //rewind by pressing left arrow key
                 if (time.greaterThanOrEqualTo(Duration.ZERO)) {
                     mediaPlayer.seek(time.subtract(Duration.millis(500)));
+                    updateValues();
                 }
-            } else if (e.getCode() == KeyCode.RIGHT) {
+            } else if (e.getCode() == KeyCode.RIGHT) {  //fast forward by pressing right arrow key
                 if (time.lessThanOrEqualTo(mediaPlayer.getTotalDuration())) {
                     mediaPlayer.seek(time.add(Duration.millis(500)));
+                    updateValues();
                 }
             }
         });
@@ -146,7 +149,7 @@ public class Main extends Application {
         shuffleButton = new Button("Shuffle");
         shuffleButton.setMinWidth(100);
         shuffleButton.setMaxWidth(100);
-        shuffleButton.setOnAction(e -> {
+        shuffleButton.setOnAction(e -> {            //pressing this button will shuffle the playback order
             if (!shuffled) {
                 shuffle();
             } else {
@@ -157,12 +160,29 @@ public class Main extends Application {
 
         Button repeatButton = new Button("Repeat1");
         repeatButton.setMinWidth(100);
-        shuffleButton.setMaxWidth(100);
-        repeatButton.setOnAction(e -> { repeat(); });
-        Label spacer2 = new Label("    \t\t ");
+        repeatButton.setMaxWidth(100);
+        repeatButton.setOnAction(e -> { repeat(); });       //pressing this button will make the player repeat the
+        Label spacer2 = new Label("\t\t");        //selected song until toggled off
         spacer2.setMouseTransparent(true);
         grid.add(spacer2, 12, 3, 2, 1);
         grid.add(repeatButton, 14, 3, 2, 1);
+
+        Button uploadButton = new Button("Upload/Download");
+        uploadButton.setMinWidth(100);
+        uploadButton.setMaxWidth(100);
+        uploadButton.setOnAction(e -> {
+            if (songList.getSelectionModel().getSelectedItem().getFlag().equals("local")) {
+                upload();
+            } else if (songList.getSelectionModel().getSelectedItem().getFlag().equals("SERVER FILE")) {
+                songList.getSelectionModel().getSelectedItem().setFlag("local");
+                download();
+            }
+            songList.refresh();
+        });
+        Label spacer3 = new Label("\t\t");
+        spacer3.setMouseTransparent(true);
+        grid.add(spacer3, 16, 3, 2, 1);
+        grid.add(uploadButton, 18,3,2,1);
 
         timeSlider = new Slider();
         timeSlider.setMinWidth(470);
@@ -187,13 +207,14 @@ public class Main extends Application {
         volumeSlider.setMaxWidth(100);
         grid.add(volumeSlider, 6, 4, 6, 1);
 
+        //listens for the user changing the position of the volume slider
         volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 mediaPlayer.setVolume(volumeSlider.getValue());
             }
         });
 
-        Media song = DataSource.getAllSongs().get(0).getData();
+        Media song = DataSource.getAllSongs().get(0).getData();     //load first song
         songList.getSelectionModel().select(0);
         songList.getFocusModel().focus(0);
         mediaPlayer = new MediaPlayer(song);
@@ -209,16 +230,16 @@ public class Main extends Application {
     }
 
     public void prev(){
-        checkFlag();
+        checkFlag();                    //check if file is set to be deleted from local directory
         mediaPlayer.stop();
         if(!shuffled) {
             if (index == 0) {
-                songList.getSelectionModel().select(songList.getItems().size() - 1);
+                songList.getSelectionModel().select(songList.getItems().size() - 1);   //selection wrapping
             } else {
                 songList.getSelectionModel().selectPrevious();
             }
         } else {
-            shuffleIndex -= 1;
+            shuffleIndex -= 1;                          //if shuffled go to the next song in shuffled order
             if (shuffleIndex <= 0) {
                 shuffleIndex = shuffleOrder.length-1;
             }
@@ -232,12 +253,12 @@ public class Main extends Application {
         mediaPlayer.stop();
         if (!shuffled) {
             if (index == songList.getItems().size() - 1) {
-                songList.getSelectionModel().select(0);
+                songList.getSelectionModel().select(0);     //selection wrapping
             } else {
                 songList.getSelectionModel().selectNext();
             }
         } else {
-            shuffleIndex += 1;
+            shuffleIndex += 1;                          //if shuffled go to the next song in shuffled order
             if (shuffleIndex <= shuffleOrder.length) {
                 if (shuffleIndex == shuffleOrder.length-1) {
                     shuffleIndex = 0;
@@ -248,12 +269,37 @@ public class Main extends Application {
         play();
     }
 
+    public void upload() {
+        try {
+            socket = new Socket("localhost", 8080);
+            PrintWriter pw = new PrintWriter(socket.getOutputStream());
+            pw.write("UPLOAD /" + songList.getSelectionModel().getSelectedItem().getFileName()
+                    + " HTTP/1.1\r\n");  //send upload request
+            pw.flush();
+
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            System.out.println("Uploading...");
+            File localFile = new File(baseDirectory, songList.getSelectionModel().getSelectedItem().getFileName());
+            byte[] contents = readFileContents(localFile);         //upload file as bytes
+            out.write(contents);
+            out.flush();
+            System.out.println("File uploaded.");
+            File del = new File(baseDirectory +
+                    songList.getSelectionModel().getSelectedItem().getFileName());
+            del.delete();
+            songList.getSelectionModel().getSelectedItem().setFlag("SERVER FILE");
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void download(){
         try {
             socket = new Socket("localhost", 8080);
             PrintWriter pw = new PrintWriter(socket.getOutputStream());
-//            if (localDirectory.(songList.getSelectionModel().getSelectedItem()))
-            pw.write("DOWNLOAD /" + songList.getSelectionModel().getSelectedItem().getFileName() + " HTTP/1.1\r\n");
+            pw.write("DOWNLOAD /" + songList.getSelectionModel().getSelectedItem().getFileName()
+                    + " HTTP/1.1\r\n");         //send request for song download
             pw.flush();
 
             InputStream in = socket.getInputStream();
@@ -274,33 +320,46 @@ public class Main extends Application {
         }
     }
 
-    public void repeat() { repeatOne = !repeatOne; }
+    private byte[] readFileContents(File file) {
+        byte[] content = new byte[(int) file.length()];
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            fis.read(content);                                  //read file into byte array
+            fis.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return content;
+    }
+
+    public void repeat() { repeatOne = !repeatOne; }        //toggle repeat
 
     public void shuffle(){
         shuffled = true;
         Random rng = new Random();
-        Set<Integer> rand = new LinkedHashSet<>();
+        Set<Integer> rand = new LinkedHashSet<>();          //set for random numbers to prevent repeats
         while (rand.size() < songList.getItems().size()-1) {
-            Integer r = rng.nextInt(songList.getItems().size()-1);
+            Integer r = rng.nextInt(songList.getItems().size()-1);      //generate number
             rand.add(r);
         }
         shuffleOrder = new int[rand.size()];
         int ind = 0;
         for (Iterator i = rand.iterator(); i.hasNext();) {
-            shuffleOrder[ind++] = (int) i.next();
+            shuffleOrder[ind++] = (int) i.next();                              //save shuffle order
         }
     }
 
     public void checkFlag() {
-        if (songList.getSelectionModel().getSelectedItem().getFlag().equals("DELETE")) {
-            File del = new File(baseDirectory +
+        if (songList.getSelectionModel().getSelectedItem().getFlag().equals("DELETE")) {   //check if file is set
+            File del = new File(baseDirectory +                                  //to be deleted
                     songList.getSelectionModel().getSelectedItem().getFileName());
             del.delete();
-            songList.getSelectionModel().getSelectedItem().setFlag("SERVER FILE");
+            songList.getSelectionModel().getSelectedItem().setFlag("SERVER FILE");         //reset flag
         }
     }
 
     public void play() {
+        //wait for player to be ready
         mediaPlayer.setOnReady(new Runnable() {
             @Override
             public void run() {
@@ -309,6 +368,8 @@ public class Main extends Application {
                 timeSlider.setValue(0.0);
             }
         });
+
+        //set the player in paused status
         mediaPlayer.setOnPaused(new Runnable() {
             @Override
             public void run() {
@@ -317,6 +378,7 @@ public class Main extends Application {
             }
         });
 
+        //set the player in playing status
         mediaPlayer.setOnPlaying(new Runnable() {
             @Override
             public void run() {
@@ -329,6 +391,7 @@ public class Main extends Application {
             }
         });
 
+        //set the player in end status and shift to next song or repeat
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
@@ -340,6 +403,7 @@ public class Main extends Application {
             }
         });
 
+        //update time/time slider/time display
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
             public void changed(ObservableValue<? extends Duration> observable,
@@ -356,9 +420,9 @@ public class Main extends Application {
     }
 
     public void updateValues() {
-        time = mediaPlayer.getCurrentTime();
-        timeSlider.setValue(time.toSeconds() / mediaPlayer.getTotalDuration().toSeconds());
-        timeDisplay.setText(getFormattedTime(mediaPlayer.getCurrentTime()) +
+        time = mediaPlayer.getCurrentTime();                                                    //update time
+        timeSlider.setValue(time.toSeconds() / mediaPlayer.getTotalDuration().toSeconds());     //update slider
+        timeDisplay.setText(getFormattedTime(mediaPlayer.getCurrentTime()) +                    //update time display
                 " / " + getFormattedTime(mediaPlayer.getTotalDuration()));
     }
 

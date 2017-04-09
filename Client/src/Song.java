@@ -73,7 +73,7 @@ public class Song {
         return album;
     }
 
-    public void setFlag(String status) { this.flag = status; this.artist = this.artist + "\t\t\t-" + status; }
+    public void setFlag(String status) { this.flag = status; }
     public String getFlag() { return flag; }
 
     public Media getData(){
@@ -84,11 +84,11 @@ public class Song {
 
     public String toString(){
         if((songName != null) && (artist != null)) {
-            return (songName + " - " + artist);
+            return (getFlag() +" - " + songName + " - " + artist);
         } else if(songName != null){
-            return songName;
+            return getFlag() + " - " + songName;
         } else{
-            return file.toString();
+            return getFlag() + " - " + file.toString();
         }
     }
 }
