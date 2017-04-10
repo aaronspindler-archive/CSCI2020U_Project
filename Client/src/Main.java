@@ -49,7 +49,7 @@ public class Main extends Application {
         primaryStage.setTitle("Music Player - Client");
 
         GridPane grid = new GridPane();
-        grid.setAlignment(Pos.TOP_LEFT);
+        grid.setAlignment(Pos.CENTER_LEFT);
 
         menuBar = new MenuBar();
         fileMenu = new Menu("Options");
@@ -125,8 +125,8 @@ public class Main extends Application {
 
 
         prevButton = new Button("<<");
-        prevButton.setMinWidth(50);
-        prevButton.setMaxWidth(50);
+        prevButton.setMinWidth(100);
+        prevButton.setMaxWidth(100);
         prevButton.setOnAction(e -> prev());
         grid.add(prevButton, 0, 3, 2,1);
 
@@ -137,14 +137,10 @@ public class Main extends Application {
         grid.add(playButton,2,3,2,1);
 
         nextButton = new Button(">>");
-        nextButton.setMinWidth(50);
-        nextButton.setMaxWidth(50);
+        nextButton.setMinWidth(100);
+        nextButton.setMaxWidth(100);
         nextButton.setOnAction(e -> next());
         grid.add(nextButton, 4, 3, 2, 1);
-
-        Label spacer = new Label("    \t\t ");
-        spacer.setMouseTransparent(true);
-        grid.add(spacer, 6, 3, 2, 1);
 
         shuffleButton = new Button("Shuffle");
         shuffleButton.setMinWidth(100);
@@ -156,20 +152,18 @@ public class Main extends Application {
                 shuffled = false;
             }
         });
-        grid.add(shuffleButton, 10, 3, 2, 1);
+        grid.add(shuffleButton, 0, 4, 2, 1);
 
         Button repeatButton = new Button("Repeat1");
         repeatButton.setMinWidth(100);
         repeatButton.setMaxWidth(100);
         repeatButton.setOnAction(e -> { repeat(); });       //pressing this button will make the player repeat the
-        Label spacer2 = new Label("\t\t");        //selected song until toggled off
-        spacer2.setMouseTransparent(true);
-        grid.add(spacer2, 12, 3, 2, 1);
-        grid.add(repeatButton, 14, 3, 2, 1);
+                                                            // selected song until toggled off
+        grid.add(repeatButton, 2, 4, 2, 1);
 
         Button uploadButton = new Button("Upload/Download");
-        uploadButton.setMinWidth(100);
-        uploadButton.setMaxWidth(100);
+        uploadButton.setMinWidth(150);
+        uploadButton.setMaxWidth(150);
         uploadButton.setOnAction(e -> {
             if (songList.getSelectionModel().getSelectedItem().getFlag().equals("local")) {
                 upload();
@@ -179,10 +173,7 @@ public class Main extends Application {
             }
             songList.refresh();
         });
-        Label spacer3 = new Label("\t\t");
-        spacer3.setMouseTransparent(true);
-        grid.add(spacer3, 16, 3, 2, 1);
-        grid.add(uploadButton, 18,3,2,1);
+        grid.add(uploadButton, 4,4,2,1);
 
         timeSlider = new Slider();
         timeSlider.setMinWidth(470);
@@ -197,7 +188,7 @@ public class Main extends Application {
         grid.add(timeDisplay, 0,2,12,1);
 
         volumeLabel = new Label("Volume: ");
-        grid.add(volumeLabel, 0, 4, 6, 1);
+        grid.add(volumeLabel, 0, 5, 6, 1);
 
         volumeSlider = new Slider();
         volumeSlider.setValue(1.0);
@@ -205,7 +196,7 @@ public class Main extends Application {
         volumeSlider.setMin(0.0);
         volumeSlider.setMinWidth(100);
         volumeSlider.setMaxWidth(100);
-        grid.add(volumeSlider, 6, 4, 6, 1);
+        grid.add(volumeSlider, 6, 5, 6, 1);
 
         //listens for the user changing the position of the volume slider
         volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -284,9 +275,6 @@ public class Main extends Application {
             out.write(contents);
             out.flush();
             System.out.println("File uploaded.");
-            File del = new File(baseDirectory +
-                    songList.getSelectionModel().getSelectedItem().getFileName());
-            del.delete();
             songList.getSelectionModel().getSelectedItem().setFlag("SERVER FILE");
             out.close();
         } catch (Exception e) {

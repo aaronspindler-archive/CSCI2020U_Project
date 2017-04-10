@@ -2,19 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="93a012c7-8484-4cce-86f8-e481b5b0e346" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/clientMusic/Axletree_-_01_-_Three_kites_circling.mp3" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/clientMusic/DRVN_-_01_-_Obsession_Produced_By_JBlanked.mp3" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/clientMusic/Darude - Sandstorm.mp3" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/clientMusic/Lobo_Loco_-_06_-_Summoner_of_Winter_ID_439.mp3" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/clientMusic/Tours_-_01_-_Enthusiast.mp3" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/clientMusic/dadala_-_08_-_the_orange_report.mp3" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/clientMusic/springtide_-_04_-_Light_off__Move_on.mp3" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/clientMusic/excellent.mp3" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/clientMusic/Kosta_T_-_13_-___.mp3" afterPath="$PROJECT_DIR$/clientMusic/Kosta_T_-_13_-___.mp3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/serverMusic/Axletree_-_01_-_Three_kites_circling.mp3" afterPath="$PROJECT_DIR$/serverMusic/Axletree_-_01_-_Three_kites_circling.mp3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Client/src/DataSource.java" afterPath="$PROJECT_DIR$/Client/src/DataSource.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/serverMusic/Kosta_T_-_13_-___.mp3" afterPath="$PROJECT_DIR$/serverMusic/Kosta_T_-_13_-___.mp3" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Client/src/Main.java" afterPath="$PROJECT_DIR$/Client/src/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Client/src/Song.java" afterPath="$PROJECT_DIR$/Client/src/Song.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -80,8 +71,8 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Client/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-108">
-              <caret line="288" column="25" lean-forward="true" selection-start-line="288" selection-start-column="25" selection-end-line="288" selection-end-column="25" />
+            <state relative-caret-position="162">
+              <caret line="276" column="49" lean-forward="false" selection-start-line="276" selection-start-column="49" selection-end-line="276" selection-end-column="49" />
               <folding />
             </state>
           </provider>
@@ -974,8 +965,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Client/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-108">
-          <caret line="288" column="25" lean-forward="true" selection-start-line="288" selection-start-column="25" selection-end-line="288" selection-end-column="25" />
+        <state relative-caret-position="162">
+          <caret line="276" column="49" lean-forward="false" selection-start-line="276" selection-start-column="49" selection-end-line="276" selection-end-column="49" />
           <folding />
         </state>
       </provider>
